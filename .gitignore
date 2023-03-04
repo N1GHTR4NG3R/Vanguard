@@ -102,3 +102,13 @@ dist
 
 # TernJS port file
 .tern-port
+
+# Config files
+config.json
+
+# Package files
+package.json
+
+# VSC Files
+.vs
+.vscode
