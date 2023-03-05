@@ -6,17 +6,19 @@ module.exports = {
     .setDescription('Checks users ping!'),
 
   async execute(interaction) {
-    await interaction.reply(
-      `${interaction.user.username} your ping is: ${interaction.client.ws.ping}ms`
-    );
-    await interaction
-      .editReply({
-        content: 'Calculating your latency...',
-        fetchReply: true,
-      })
+    await interaction.reply({
+      content: 'Thanks, Checking now...',
+      ephemeral: true,
+    });
+    await interaction.channel
+      .send(
+        `${interaction.user.username} your ping is: ${interaction.client.ws.ping}ms`
+      )
       .then(msg => {
         msg.edit(
-          `Your ping is ${interaction.client.ws.ping}ms and your latency is: ${
+          `${interaction.user.username} your ping is ${
+            interaction.client.ws.ping
+          }ms and your latency is: ${
             msg.createdTimestamp - interaction.createdTimestamp
           }ms`
         );

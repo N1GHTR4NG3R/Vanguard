@@ -3,7 +3,13 @@ const fs = require('node:fs');
 const path = require('node:path');
 
 // Require discord.js classes
-const { Client, Collection, Events, GatewayIntentBits } = require('discord.js');
+const {
+  Client,
+  Collection,
+  Events,
+  GatewayIntentBits,
+  Partials,
+} = require('discord.js');
 
 // Require environment
 const dotenv = require('dotenv');
@@ -13,7 +19,15 @@ dotenv.config();
 const token = process.env.DISCORD_TOKEN;
 
 // Create client Instance
-const bot = new Client({ intents: [GatewayIntentBits.Guilds] });
+const bot = new Client({
+  intents: [
+    GatewayIntentBits.Guilds,
+    GatewayIntentBits.GuildMessages,
+    GatewayIntentBits.MessageContent,
+    GatewayIntentBits.GuildMembers,
+  ],
+  partials: [Partials.Message, Partials.Channel, Partials.Reaction],
+});
 
 bot.commands = new Collection();
 
@@ -36,38 +50,21 @@ for (const file of commandFiles) {
   }
 }
 
-// Event/Command Listener
-bot.on(Events.InteractionCreate, async interaction => {
-  if (!interaction.isChatInputCommand()) return;
+// Create Event Handler
+const eventsPath = path.join(__dirname, 'events');
+const eventFiles = fs
+  .readdirSync(eventsPath)
+  .filter(file => file.endsWith('.js'));
 
-  const command = interaction.client.commands.get(interaction.commandName);
+for (const file of eventFiles) {
+  const filePath = path.join(eventsPath, file);
+  const event = require(filePath);
 
-  if (!command) {
-    console.error(`No command matching ${interaction.commandName} was found.`);
-    return;
+  if (event.once) {
+    bot.once(event.name, (...args) => event.execute(...args));
+  } else {
+    bot.on(event.name, (...args) => event.execute(...args));
   }
-
-  try {
-    await command.execute(interaction);
-  } catch (error) {
-    console.error(error);
-    if (interaction.replied || interaction.deferred) {
-      await interaction.followUp({
-        content: 'There was an error while executing this command!',
-        ephemeral: true,
-      });
-    } else {
-      await interaction.reply({
-        content: 'There was an error while executing this command!',
-        ephemeral: true,
-      });
-    }
-  }
-});
-
-// Start the Bot
-bot.once(Events.ClientReady, b => {
-  console.log(`${b.user.username} is online and ready to rumble! `);
-});
+}
 
 bot.login(token);
