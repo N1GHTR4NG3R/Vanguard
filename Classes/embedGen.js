@@ -16,6 +16,12 @@ class embGen {
    * @param {string} date Time input
    * @param {string} msgValue User inputted message
    */
+
+  /**
+   * Event Registration
+   * registration.js
+   * Line 60 - 62
+   */
   generateRegEmb(header, date, msgValue) {
     const newRegEmb = new EmbedBuilder()
       .setColor('#BB4D0E')
@@ -24,6 +30,27 @@ class embGen {
       .setThumbnail(`https://i.ibb.co/phpWhJR/Vanguard-logo.png`)
       .addFields({ name: 'Time', value: `${date}` });
     return newRegEmb;
+  }
+
+  /**
+   * Event Registration Edit
+   * registration.js
+   * Line 101 - 110
+   */
+
+  generateRegEdEmb(header, date, msgValue, accepted, maybe, declined) {
+    const newRegEdEmb = new EmbedBuilder()
+      .setColor('#BB4D0E')
+      .setTitle(`${header}`)
+      .setDescription(`${msgValue}`)
+      .setThumbnail(`https://i.ibb.co/phpWhJR/Vanguard-logo.png`)
+      .addFields({ name: 'Time', value: `${date}` })
+      .addFields(
+        { name: 'Accepted:', value: `${accepted}` + '\n\u200b' },
+        { name: 'Maybe', value: `${maybe}` + '\n\u200b' },
+        { name: 'Declined', value: `${declined}` + '\n\u200b' }
+      );
+    return newRegEdEmb;
   }
 }
 
