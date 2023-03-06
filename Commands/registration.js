@@ -35,7 +35,11 @@ module.exports = {
     const header = interaction.options.getString('title');
     const date = interaction.options.getString('time');
     const msgValue = interaction.options.getString('message');
-    const userId = interaction.user.id;
+
+    // Create arrays to handle users
+    let accepted = [];
+    let maybe = [];
+    let declined = [];
 
     const buttons = new ActionRowBuilder()
       .addComponents(
@@ -72,89 +76,40 @@ module.exports = {
 
     // Handle button Interaction
     collector.on('collect', async i => {
-      // Create arrays to handle users
-      let accepted = [];
-      let maybe = [];
-      let declined = [];
-
       // Add users to user arrays
+      // Accepted
       if (i.customId === 'Accepted') {
         // Check to see if user already accepted
-        if (accepted.includes(`${i.user.username}`)) {
-          console.log(`${i.user.username} already accepted...`);
-        }
-        // Check to see if user was previously unsure and remove then push
-        if (maybe.includes(`${i.user.username}`)) {
-          for (a = 0; a < maybe.length; a++) {
-            if (maybe[a] === i.user.username) {
-              maybe.splice(a, i.user.username);
-              a--;
-              accepted.push(`${i.user.username}`);
-            }
-          }
-        }
-        // Check to see if user previously declined and remove then push
-        if (declined.includes(`${i.user.username}`)) {
-          for (b = 0; b < declined.length; b++) {
-            if (declined[b] === i.user.username) {
-              declined.splice(b, i.user.username);
-              b--;
-              accepted.push(`${i.user.username}`);
-            }
-          }
-          // Otherwise push to array
-        } else {
+        if (!accepted.includes(`${i.user.username}`)) {
+          // Check other arrays first!
+          maybe = maybe.filter(item => item !== i.user.username);
+          declined = declined.filter(item => item !== i.user.username);
           accepted.push(`${i.user.username}`);
+          console.log('Accepted: ' + accepted);
+        } else {
+          console.log(`${i.user.username} already accepted!...`);
         }
       }
+      // Maybe
       if (i.customId === 'Maybe') {
-        if (maybe.includes(`${i.user.username}`)) {
-          console.log(`${i.user.username} still isn't sure...`);
-        }
-        if (accepted.includes(`${i.user.username}`)) {
-          for (a = 0; a < accepted.length; a++) {
-            if (accepted[a] === i.user.username) {
-              accepted.splice(a, i.user.username);
-              a--;
-              maybe.push(`${i.user.username}`);
-            }
-          }
-        }
-        if (declined.includes(`${i.user.username}`)) {
-          for (b = 0; b < declined.length; b++) {
-            if (declined[b] === i.user.username) {
-              declined.splice(b, i.user.username);
-              b--;
-              maybe.push(`${i.user.username}`);
-            }
-          }
-        } else {
+        if (!maybe.includes(`${i.user.username}`)) {
+          accepted = accepted.filter(item => item !== i.user.username);
+          declined = declined.filter(item => item !== i.user.username);
           maybe.push(`${i.user.username}`);
+          console.log('Maybe: ' + maybe);
+        } else {
+          console.log(`${i.user.username} still isn't sure!...`);
         }
       }
+      // Declined
       if (i.customId === 'Declined') {
-        if (declined.includes(`${i.user.username}`)) {
-          console.log(`${i.user.username} already declined...`);
-        }
-        if (accepted.includes(`${i.user.username}`)) {
-          for (a = 0; a < accepted.length; a++) {
-            if (accepted[a] === i.user.username) {
-              accepted.splice(a, i.user.username);
-              a--;
-              declined.push(`${i.user.username}`);
-            }
-          }
-        }
-        if (maybe.includes(`${i.user.username}`)) {
-          for (b = 0; b < maybe.length; b++) {
-            if (maybe[b] === i.user.username) {
-              maybe.splice(b, i.user.username);
-              b--;
-              declined.push(`${i.user.username}`);
-            }
-          }
-        } else {
+        if (!declined.includes(`${i.user.username}`)) {
+          accepted = accepted.filter(item => item !== i.user.username);
+          maybe = maybe.filter(item => item !== i.user.username);
           declined.push(`${i.user.username}`);
+          console.log('Declined: ' + declined);
+        } else {
+          console.log(`${i.user.username} has already declined!...`);
         }
       }
 
@@ -174,12 +129,14 @@ module.exports = {
           embeds: [regEdMsg],
           components: [buttons],
         });
-      } else if (i.customId === 'Maybe') {
+      }
+      if (i.customId === 'Maybe') {
         i.update({
           embeds: [regEdMsg],
           components: [buttons],
         });
-      } else if (i.customId === 'Declined') {
+      }
+      if (i.customId === 'Declined') {
         i.update({
           embeds: [regEdMsg],
           components: [buttons],
