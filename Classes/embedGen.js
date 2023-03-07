@@ -22,13 +22,13 @@ class embGen {
    * registration.js
    * Line 60 - 62
    */
-  generateRegEmb(header, date, msgValue) {
+  generateRegEmb(header, time, msgValue) {
     const newRegEmb = new EmbedBuilder()
       .setColor('#BB4D0E')
       .setTitle(`${header}`)
       .setDescription(`${msgValue}`)
       .setThumbnail(`https://i.ibb.co/phpWhJR/Vanguard-logo.png`)
-      .addFields({ name: 'Time', value: `${date}` });
+      .addFields({ name: 'Time', value: `<t:${time}:R>` });
     return newRegEmb;
   }
 
@@ -38,13 +38,13 @@ class embGen {
    * Line 101 - 110
    */
 
-  generateRegEdEmb(header, date, msgValue, accepted, maybe, declined) {
+  generateRegEdEmb(header, time, msgValue, accepted, maybe, declined) {
     const newRegEdEmb = new EmbedBuilder()
       .setColor('#BB4D0E')
       .setTitle(`${header}`)
       .setDescription(`${msgValue}`)
       .setThumbnail(`https://i.ibb.co/phpWhJR/Vanguard-logo.png`)
-      .addFields({ name: 'Time', value: `${date}` })
+      .addFields({ name: 'Time', value: `<t:${time}:R>` })
       .addFields(
         { name: 'Accepted:', value: `${accepted}` + '\n\u200b' },
         { name: 'Maybe', value: `${maybe}` + '\n\u200b' },

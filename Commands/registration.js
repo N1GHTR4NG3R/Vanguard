@@ -20,9 +20,114 @@ module.exports = {
     )
     .addStringOption(option =>
       option
-        .setName('time')
-        .setDescription('Date and time of the Event')
+        .setName('month')
+        .setDescription('Choose the month of the event')
         .setRequired(true)
+        .addChoices(
+          {
+            name: 'January',
+            value: 'January',
+          },
+          {
+            name: 'February',
+            value: 'February',
+          },
+          {
+            name: 'March',
+            value: 'March',
+          },
+          {
+            name: 'April',
+            value: 'April',
+          },
+          {
+            name: 'May',
+            value: 'May',
+          },
+          {
+            name: 'June',
+            value: 'June',
+          },
+          {
+            name: 'July',
+            value: 'July',
+          },
+          {
+            name: 'August',
+            value: 'August',
+          },
+          {
+            name: 'September',
+            value: 'September',
+          },
+          {
+            name: 'October',
+            value: 'October',
+          },
+          {
+            name: 'November',
+            value: 'November',
+          },
+          {
+            name: 'December',
+            value: 'December',
+          }
+        )
+    )
+    .addStringOption(option =>
+      option
+        .setName('day')
+        .setDescription('Day of the month for the event')
+        .setRequired(true)
+    )
+    .addStringOption(option =>
+      option
+        .setName('year')
+        .setDescription('What year for the event')
+        .setRequired(true)
+        .addChoices(
+          {
+            name: '2023',
+            value: '2023',
+          },
+          {
+            name: '2024',
+            value: '2024',
+          },
+          {
+            name: '2025',
+            value: '2025',
+          },
+          {
+            name: '2026',
+            value: '2026',
+          },
+          {
+            name: '2027',
+            value: '2027',
+          },
+          {
+            name: '2028',
+            value: '2028',
+          },
+          {
+            name: '2029',
+            value: '2029',
+          },
+          {
+            name: '2030',
+            value: '2030',
+          }
+        )
+    )
+    .addStringOption(option =>
+      option.setName('hour').setDescription('What hour?').setRequired(true)
+    )
+    .addStringOption(option =>
+      option.setName('minute').setDescription('What minute?').setRequired(true)
+    )
+    .addStringOption(option =>
+      option.setName('seconds').setDescription('What Second?').setRequired(true)
     )
     .addStringOption(option =>
       option
@@ -33,8 +138,18 @@ module.exports = {
 
   async execute(interaction) {
     const header = interaction.options.getString('title');
-    const date = interaction.options.getString('time');
+    const month = interaction.options.getString('month');
+    const day = interaction.options.getString('day');
+    const year = interaction.options.getString('year');
+    const hour = interaction.options.getString('hour');
+    const minute = interaction.options.getString('minute');
+    const sec = interaction.options.getString('seconds');
     const msgValue = interaction.options.getString('message');
+
+    // Convert time to unix for countdown Timer Display
+    const eventDate =
+      month + ' ' + day + ', ' + year + ' ' + hour + ':' + minute + ':' + sec;
+    const time = new Date(eventDate).getTime() / 1000;
 
     // Create arrays to handle users
     let accepted = [];
@@ -63,10 +178,10 @@ module.exports = {
 
     // Original message
     const regEmb = new embGen();
-    const regMsg = regEmb.generateRegEmb(header, date, msgValue);
+    const regMsg = regEmb.generateRegEmb(header, time, msgValue);
 
     await interaction.reply({
-      content: `${header} at ${date}
+      content: `${header} at ${eventDate}
        ${msgValue}`,
       ephemeral: true,
     });
@@ -117,7 +232,7 @@ module.exports = {
       const regEdEmb = new embGen();
       const regEdMsg = regEdEmb.generateRegEdEmb(
         header,
-        date,
+        time,
         msgValue,
         accepted,
         maybe,
