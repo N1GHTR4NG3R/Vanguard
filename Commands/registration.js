@@ -8,6 +8,9 @@ const {
 // Require Embed Generator
 const embGen = require('../Classes/embedGen.js');
 
+// Import arrays
+let { accepted, maybe, declined } = require('../Data/arrays');
+
 module.exports = {
   data: new SlashCommandBuilder()
     .setName('registration')
@@ -151,10 +154,8 @@ module.exports = {
       month + ' ' + day + ', ' + year + ' ' + hour + ':' + minute + ':' + sec;
     const time = new Date(eventDate).getTime() / 1000;
 
-    // Create arrays to handle users
-    let accepted = [];
-    let maybe = [];
-    let declined = [];
+    // Timer for the collector to match given time by user.
+    const collectTime = new Date(eventDate).getTime() - Date.now();
 
     const buttons = new ActionRowBuilder()
       .addComponents(
@@ -187,7 +188,9 @@ module.exports = {
     });
     await interaction.channel.send({ embeds: [regMsg], components: [buttons] });
 
-    const collector = interaction.channel.createMessageComponentCollector();
+    const collector = interaction.channel.createMessageComponentCollector({
+      time: collectTime,
+    });
 
     // Handle button Interaction
     collector.on('collect', async i => {
@@ -196,11 +199,24 @@ module.exports = {
       if (i.customId === 'Accepted') {
         // Check to see if user already accepted
         if (!accepted.includes(`${i.user.username}`)) {
-          // Check other arrays first!
-          maybe = maybe.filter(item => item !== i.user.username);
-          declined = declined.filter(item => item !== i.user.username);
+          // check for user and index!
+          let searchInd = maybe.findIndex(u => u === i.user.username);
+          let searchInd1 = declined.findIndex(u => u === i.user.username);
+          // Remove user from other arrays
+          if (searchInd === -1) {
+            console.log('No Users found');
+          } else {
+            maybe.splice(searchInd, 1);
+            console.log('Removed user: ' + i.user.username + 'from maybe!');
+          }
+          if (searchInd1 === -1) {
+            console.log('No Users found');
+          } else {
+            declined.splice(searchInd1, 1);
+            console.log(`Removed user: ` + i.user.username) + 'from declined!';
+          }
+          // Add user to new array
           accepted.push(`${i.user.username}`);
-          console.log('Accepted: ' + accepted);
         } else {
           console.log(`${i.user.username} already accepted!...`);
         }
@@ -208,10 +224,23 @@ module.exports = {
       // Maybe
       if (i.customId === 'Maybe') {
         if (!maybe.includes(`${i.user.username}`)) {
-          accepted = accepted.filter(item => item !== i.user.username);
-          declined = declined.filter(item => item !== i.user.username);
+          let searchInd = accepted.findIndex(u => u === i.user.username);
+          let searchInd1 = declined.findIndex(u => u === i.user.username);
+
+          if (searchInd === -1) {
+            console.log('No Users found');
+          } else {
+            accepted.splice(searchInd, 1);
+            console.log('Removed user: ' + i.user.username + 'from accepted!');
+          }
+          if (searchInd1 === -1) {
+            console.log('No Users found');
+          } else {
+            declined.splice(searchInd1, 1);
+            console.log(`Removed user: ` + i.user.username) + 'from declined!';
+          }
+
           maybe.push(`${i.user.username}`);
-          console.log('Maybe: ' + maybe);
         } else {
           console.log(`${i.user.username} still isn't sure!...`);
         }
@@ -219,10 +248,23 @@ module.exports = {
       // Declined
       if (i.customId === 'Declined') {
         if (!declined.includes(`${i.user.username}`)) {
-          accepted = accepted.filter(item => item !== i.user.username);
-          maybe = maybe.filter(item => item !== i.user.username);
+          let searchInd = accepted.findIndex(u => u === i.user.username);
+          let searchInd1 = maybe.findIndex(u => u === i.user.username);
+
+          if (searchInd === -1) {
+            console.log('No Users found');
+          } else {
+            accepted.splice(searchInd, 1);
+            console.log('Removed user: ' + i.user.username + 'from accepted!');
+          }
+          if (searchInd1 === -1) {
+            console.log('No Users found');
+          } else {
+            maybe.splice(searchInd1, 1);
+            console.log(`Removed user: ` + i.user.username) + 'from maybe!';
+          }
+
           declined.push(`${i.user.username}`);
-          console.log('Declined: ' + declined);
         } else {
           console.log(`${i.user.username} has already declined!...`);
         }
@@ -239,24 +281,16 @@ module.exports = {
         declined
       );
 
-      if (i.customId === 'Accepted') {
+      if (i.customId === 'Accepted' || 'Maybe' || 'Declined') {
         i.update({
           embeds: [regEdMsg],
           components: [buttons],
         });
       }
-      if (i.customId === 'Maybe') {
-        i.update({
-          embeds: [regEdMsg],
-          components: [buttons],
-        });
-      }
-      if (i.customId === 'Declined') {
-        i.update({
-          embeds: [regEdMsg],
-          components: [buttons],
-        });
-      }
+    });
+
+    collector.on('end', collected => {
+      console.log(`Collected ${collected.size} interactions.`);
     });
   },
 };

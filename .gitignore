@@ -115,3 +115,7 @@ package.json
 
 #Imgs
 /Imgs
+
+# Google Verification
+credentials.json
+token.json
