@@ -52,6 +52,23 @@ class embGen {
       );
     return newRegEdEmb;
   }
+
+  /**
+   * Event Registration Closed
+   * registration.js
+   * 306 -
+   */
+
+  generateRegFinEmb() {
+    const finalRegMsg = new EmbedBuilder()
+      .setColor('#BB4D0E')
+      .setTitle('** Thanks for Registering! **')
+      .setDescription(
+        '** Registration is now closed and the event has started **'
+      )
+      .setThumbnail('https://i.ibb.co/phpWhJR/Vanguard-logo.png');
+    return finalRegMsg;
+  }
 }
 
 module.exports = embGen;

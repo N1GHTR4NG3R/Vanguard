@@ -2,6 +2,7 @@ const {
   ActionRowBuilder,
   ButtonBuilder,
   ButtonStyle,
+  ComponentType,
   SlashCommandBuilder,
 } = require('discord.js');
 
@@ -181,14 +182,24 @@ module.exports = {
     const regEmb = new embGen();
     const regMsg = regEmb.generateRegEmb(header, time, msgValue);
 
+    // Send reply to user
     await interaction.reply({
       content: `${header} at ${eventDate}
        ${msgValue}`,
       ephemeral: true,
     });
-    await interaction.channel.send({ embeds: [regMsg], components: [buttons] });
 
-    const collector = interaction.channel.createMessageComponentCollector({
+    // Post Embed with values
+    let outPut = await interaction.channel.send({
+      embeds: [regMsg],
+      components: [buttons],
+    });
+    outPut;
+
+    console.log(outPut.components);
+
+    const collector = outPut.createMessageComponentCollector({
+      componentType: ComponentType.Button,
       time: collectTime,
     });
 
@@ -207,13 +218,13 @@ module.exports = {
             console.log('No Users found');
           } else {
             maybe.splice(searchInd, 1);
-            console.log('Removed user: ' + i.user.username + 'from maybe!');
+            console.log('Removed user: ' + i.user.username + ' from maybe!');
           }
           if (searchInd1 === -1) {
             console.log('No Users found');
           } else {
             declined.splice(searchInd1, 1);
-            console.log(`Removed user: ` + i.user.username) + 'from declined!';
+            console.log(`Removed user: ` + i.user.username) + ' from declined!';
           }
           // Add user to new array
           accepted.push(`${i.user.username}`);
@@ -231,13 +242,13 @@ module.exports = {
             console.log('No Users found');
           } else {
             accepted.splice(searchInd, 1);
-            console.log('Removed user: ' + i.user.username + 'from accepted!');
+            console.log('Removed user: ' + i.user.username + ' from accepted!');
           }
           if (searchInd1 === -1) {
             console.log('No Users found');
           } else {
             declined.splice(searchInd1, 1);
-            console.log(`Removed user: ` + i.user.username) + 'from declined!';
+            console.log('Removed user: ' + i.user.username + ' from declined!');
           }
 
           maybe.push(`${i.user.username}`);
@@ -255,13 +266,13 @@ module.exports = {
             console.log('No Users found');
           } else {
             accepted.splice(searchInd, 1);
-            console.log('Removed user: ' + i.user.username + 'from accepted!');
+            console.log('Removed user: ' + i.user.username + ' from accepted!');
           }
           if (searchInd1 === -1) {
             console.log('No Users found');
           } else {
             maybe.splice(searchInd1, 1);
-            console.log(`Removed user: ` + i.user.username) + 'from maybe!';
+            console.log('Removed user: ' + i.user.username + ' from maybe!');
           }
 
           declined.push(`${i.user.username}`);
@@ -290,7 +301,15 @@ module.exports = {
     });
 
     collector.on('end', collected => {
-      console.log(`Collected ${collected.size} interactions.`);
+      // Final edit
+      const regFinEmb = new embGen();
+      const regFinMsg = regFinEmb.generateRegFinEmb();
+
+      setTimeout(() => {
+        outPut.edit({ embeds: [regFinMsg], components: [] });
+      }, 5000);
+
+      console.log(`${collected.size} interactions recieved!.`);
     });
   },
 };
