@@ -318,7 +318,9 @@ module.exports = {
       const regFinMsg = regFinEmb.generateRegFinEmb();
 
       setTimeout(() => {
-        outPut.edit({ embeds: [regFinMsg], components: [] });
+        outPut.edit({ embeds: [regFinMsg], components: [] }).catch(err => {
+          console.log(`Message probably deleted...  ${err.message}`);
+        });
       }, 3000);
 
       console.log(`${collected.size} interactions recieved!.`);
