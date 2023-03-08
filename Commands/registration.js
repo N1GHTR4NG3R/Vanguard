@@ -153,6 +153,7 @@ module.exports = {
     // Convert time to unix for countdown Timer Display
     const eventDate =
       month + ' ' + day + ', ' + year + ' ' + hour + ':' + minute + ':' + sec;
+    const history = new Date(eventDate).getTime();
     const time = new Date(eventDate).getTime() / 1000;
 
     // Timer for the collector to match given time by user.
@@ -183,11 +184,24 @@ module.exports = {
     const regMsg = regEmb.generateRegEmb(header, time, msgValue);
 
     // Send reply to user
-    await interaction.reply({
-      content: `${header} at ${eventDate}
-       ${msgValue}`,
-      ephemeral: true,
-    });
+    const historyCheck = Date.now();
+
+    console.log(`Event Timestamp: ${history}`);
+    console.log(`Current Timestamp: ${historyCheck}`);
+
+    if (history <= historyCheck) {
+      await interaction.reply({
+        content: `You cannot have a date in the past`,
+        ephemeral: true,
+      });
+      return;
+    } else {
+      await interaction.reply({
+        content: `You put: ${header} at ${eventDate} with
+         ${msgValue}`,
+        ephemeral: true,
+      });
+    }
 
     // Post Embed with values
     let outPut = await interaction.channel.send({
@@ -195,8 +209,6 @@ module.exports = {
       components: [buttons],
     });
     outPut;
-
-    console.log(outPut.components);
 
     const collector = outPut.createMessageComponentCollector({
       componentType: ComponentType.Button,
@@ -307,7 +319,7 @@ module.exports = {
 
       setTimeout(() => {
         outPut.edit({ embeds: [regFinMsg], components: [] });
-      }, 5000);
+      }, 3000);
 
       console.log(`${collected.size} interactions recieved!.`);
     });
