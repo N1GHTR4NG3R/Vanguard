@@ -91,20 +91,20 @@ module.exports = {
     async function postMembers(auth) {
       const sheets = google.sheets({ version: 'v4', auth });
       const values = [
-        [
-          // Cell Values
-        ],
+        accepted,
+        maybe,
+        declined,
         // Additional rows
       ];
       const resource = {
         values,
       };
       try {
-        const result = await service.spreadsheets.values.update({
-          spreadsheetId,
-          range,
-          valueInputOption,
-          resource,
+        const result = await sheets.spreadsheets.values.update({
+          spreadsheetId: '1hH_EPPHtFb_pKlyUF_TcvGVzpQilAoZtP08eaNl0S04',
+          range: 'A3:D50',
+          valueInputOption: 'RAW',
+          resource: resource,
         });
         console.log('%d cells updated.', result.data.updatedCells);
         return result;
@@ -142,6 +142,6 @@ module.exports = {
       }
     }
 
-    authorize().then(readMembers).catch(console.error);
+    authorize().then(postMembers).catch(console.error);
   },
 };
