@@ -6,11 +6,6 @@ const process = require('process');
 const { authenticate } = require('@google-cloud/local-auth');
 const { google } = require('googleapis');
 
-// Import arrays
-const { accepted } = require('../Data/arrays');
-const { maybe } = require('../Data/arrays');
-const { declined } = require('../Data/arrays');
-
 // If modifying these scopes, delete token.json.
 const SCOPES = ['https://www.googleapis.com/auth/spreadsheets'];
 // The file token.json stores the user's access and refresh tokens, and is
@@ -21,8 +16,8 @@ const CREDENTIALS_PATH = path.join(process.cwd(), 'credentials.json');
 
 module.exports = {
   data: new SlashCommandBuilder()
-    .setName('updgoogle')
-    .setDescription('Updates Google Sheets!'),
+    .setName('clrgoogle')
+    .setDescription('Clears the Google Sheet!'),
 
   async execute(interaction) {
     // Reply to user, to let them know your updating.
@@ -93,36 +88,20 @@ module.exports = {
      * @param {google.auth.OAuth2} auth The authenticated Google OAuth client.
      */
 
-    async function upDate(auth) {
+    // Function to clear sheet
+    async function clearColumns(auth) {
       const sheets = google.sheets({ version: 'v4', auth });
       const Id = '1hH_EPPHtFb_pKlyUF_TcvGVzpQilAoZtP08eaNl0S04';
 
       const request = {
         spreadsheetId: Id,
         resource: {
-          valueInputOption: 'RAW',
-          data: [
-            {
-              majorDimension: 'COLUMNS',
-              range: 'A3:A153',
-              values: [accepted],
-            },
-            {
-              majorDimension: 'COLUMNS',
-              range: 'B3:B153',
-              values: [maybe],
-            },
-            {
-              majorDimension: 'COLUMNS',
-              range: 'C3:C153',
-              values: [declined],
-            },
-          ],
+          ranges: ['A3:A153', 'B3:B153', 'C3:C153'],
         },
       };
 
       try {
-        const response = (await sheets.spreadsheets.values.batchUpdate(request))
+        const response = (await sheets.spreadsheets.values.batchClear(request))
           .data;
         console.log(JSON.stringify(response, null, 2));
       } catch (err) {
@@ -130,6 +109,6 @@ module.exports = {
       }
     }
 
-    authorize().then(upDate).catch(console.error);
+    authorize().then(clearColumns).catch(console.error);
   },
 };

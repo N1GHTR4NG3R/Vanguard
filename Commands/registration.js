@@ -186,9 +186,6 @@ module.exports = {
     // Send reply to user
     const historyCheck = Date.now();
 
-    console.log(`Event Timestamp: ${history}`);
-    console.log(`Current Timestamp: ${historyCheck}`);
-
     if (history <= historyCheck) {
       await interaction.reply({
         content: `You cannot have a date in the past`,
@@ -230,13 +227,13 @@ module.exports = {
             console.log('No Users found');
           } else {
             maybe.splice(searchInd, 1);
-            console.log('Removed user: ' + i.user.username + ' from maybe!');
+            console.log(`Removed user: ${i.user.username} from maybe!`);
           }
           if (searchInd1 === -1) {
             console.log('No Users found');
           } else {
             declined.splice(searchInd1, 1);
-            console.log(`Removed user: ` + i.user.username) + ' from declined!';
+            console.log(`Removed user: ${i.user.username} from declined!`);
           }
           // Add user to new array
           accepted.push(`${i.user.username}`);
@@ -254,13 +251,13 @@ module.exports = {
             console.log('No Users found');
           } else {
             accepted.splice(searchInd, 1);
-            console.log('Removed user: ' + i.user.username + ' from accepted!');
+            console.log(`Removed user: ${i.user.username} from accepted!`);
           }
           if (searchInd1 === -1) {
             console.log('No Users found');
           } else {
             declined.splice(searchInd1, 1);
-            console.log('Removed user: ' + i.user.username + ' from declined!');
+            console.log(`Removed user: ${i.user.username} from declined!`);
           }
 
           maybe.push(`${i.user.username}`);
@@ -278,13 +275,13 @@ module.exports = {
             console.log('No Users found');
           } else {
             accepted.splice(searchInd, 1);
-            console.log('Removed user: ' + i.user.username + ' from accepted!');
+            console.log(`Removed user: ${i.user.username} from accepted!`);
           }
           if (searchInd1 === -1) {
             console.log('No Users found');
           } else {
             maybe.splice(searchInd1, 1);
-            console.log('Removed user: ' + i.user.username + ' from maybe!');
+            console.log(`Removed user: ${i.user.username} from maybe!`);
           }
 
           declined.push(`${i.user.username}`);
@@ -310,6 +307,9 @@ module.exports = {
           components: [buttons],
         });
       }
+      console.log(
+        `Registration -- Accepted: ${accepted} | Maybe: ${maybe} | Declined: ${declined}`
+      );
     });
 
     collector.on('end', collected => {
